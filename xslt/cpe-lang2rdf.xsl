@@ -31,9 +31,9 @@
 	  <xsl:value-of select="@negate" />
 	</nvdcpe:negate>
         <xsl:for-each select="cpe-lang:fact-ref">
-          <nvdcpe:name>
+          <nvdcpe:namePattern>
             <xsl:value-of select="@name" />
-          </nvdcpe:name>
+          </nvdcpe:namePattern>
         </xsl:for-each>
       </rdf:Description>
   </xsl:template>

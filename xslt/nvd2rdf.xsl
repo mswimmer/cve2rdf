@@ -84,11 +84,11 @@
       <xsl:apply-templates select="vuln:cvss" />
       <xsl:apply-templates select="vuln:vulnerable-configuration" />
 
+      <!-- TODO: not tested -->
+      <xsl:apply-templates select="vuln:assessment_check" />
+      <xsl:apply-templates select="vuln:scanner" />
+      
     </rdf:Description>
-
-    <!--xsl:apply-templates select="vuln:assessment_check"><xsl:with-param name="nvd-id" select="$nvd-id"/></xsl:apply-templates-->
-    <!--xsl:apply-templates select="vuln:scanner"><xsl:with-param name="nvd-id" select="$nvd-id"/></xsl:apply-templates-->
-
   </xsl:template>
 
   <xsl:template match="vuln:vulnerable-software-list">
@@ -145,51 +145,43 @@
       <xsl:apply-templates select="cvss:base_metrics" />
     </nvdvuln:cvss>
   </xsl:template>
-
-  
-  <!-- fact-ref -->
-  <!--xsl:template match="cpe-lang:fact-ref">
-    <xsl:param name="nvd-id"/>
-    <rdf:Description>
-      <xsl:attribute name="rdf:about"><xsl:value-of select="$URI"/>/NVD/<xsl:value-of select="$nvd-id"/></xsl:attribute>
-      <terms:fact-ref><xsl:value-of select="@name"/></terms:fact-ref>
-    </rdf:Description>
-  </xsl:template-->
-
-  <!-- product -->
-  <!--xsl:template match="vuln:product">
-    <xsl:param name="nvd-id"/>
-        <xsl:attribute name="rdf:about">
-        <xsl:value-of select="$URI"/>/NVD/<xsl:value-of select="$nvd-id"/></xsl:attribute>
-        <cpe-lang:namePattern><xsl:value-of select="."/></cpe-lang:namePattern>
-  </xsl:template-->
   
   <!-- vuln:assessment_check -->
-  <!--xsl:template match="vuln:assessment_check ">
-    <xsl:param name="nvd-id"/>
-    <rdf:Description>
-<xsl:attribute name="rdf:about"><xsl:value-of select="$URI"/>/NVD/<xsl:value-of select="$nvd-id"/></xsl:attribute>
-      <terms:assessment_check-name><xsl:value-of select="@name"/></terms:assessment_check-name>
-      <terms:assessment_check-href><xsl:value-of select="@href"/></terms:assessment_check-href>
-    </rdf:Description>
-  </xsl:template-->
+  <xsl:template match="vuln:assessment_check">
+    <nvdvuln:assessmentCheck>
+      <rdf:Description>
+        <nvdvuln:assessmentCheckName>
+          <xsl:value-of select="@name"/>
+        </nvdvuln:assessmentCheckName>
+        <nvdvuln:assessmentCheckURL>
+          <xsl:value-of select="@href"/>
+        </nvdvuln:assessmentCheckURL>
+      </rdf:Description>
+    </nvdvuln:assessmentCheck>
+  </xsl:template>
 
-  
   <!-- vuln:scanner -->
-  <!--xsl:template match="vuln:scanner">
-    <xsl:param name="nvd-id"/>
-    <xsl:apply-templates select="vuln:definition"><xsl:with-param name="nvd-id" select="$nvd-id"/></xsl:apply-templates>
-  </xsl:template-->
+  <xsl:template match="vuln:scanner">
+    <nvdvuln:scanner>
+      <rdf:Description>
+        <xsl:apply-templates select="vuln:definition" />
+      </rdf:Description>
+    </nvdvuln:scanner>
+  </xsl:template>
   
   <!-- vuln:definition -->
-  <!--xsl:template match="vuln:definition">
-    <xsl:param name="nvd-id"/>
+  <xsl:template match="vuln:definition">
     <rdf:Description>
-<xsl:attribute name="rdf:about"><xsl:value-of select="$URI"/>/NVD/<xsl:value-of select="$nvd-id"/></xsl:attribute>
-      <terms:definition-name><xsl:value-of select="@name"/></terms:definition-name>
-      <terms:definition-href><xsl:value-of select="@href"/></terms:definition-href>
-      <terms:definition-system><xsl:value-of select="@system"/></terms:definition-system>
+      <nvdvuln:definitionName>
+        <xsl:value-of select="@name"/>
+      </nvdvuln:definitionName>
+      <nvdvuln:definitionURL>
+        <xsl:value-of select="@href"/>
+      </nvdvuln:definitionURL>
+      <nvdvuln:definitionSystem>
+        <xsl:value-of select="@system"/>
+      </nvdvuln:definitionSystem>
     </rdf:Description>
-  </xsl:template-->
+  </xsl:template>
 
 </xsl:stylesheet>
