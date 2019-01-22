@@ -59,13 +59,15 @@
         <xsl:value-of select="$nvd-id"/>
       </nvdcve:id>
       
-      <dc:description>
+      <nvdvuln:summary>
         <xsl:value-of select="vuln:summary"/>
-      </dc:description>
+      </nvdvuln:summary>
       
-      <nvdvuln:cwe-id>
-        <xsl:value-of select="vuln:cwe/@id"/>
-      </nvdvuln:cwe-id>
+      <nvdvuln:cwe>
+        <rdf:Description>
+          <xsl:attribute name="rdf:about">http://cve.mitre.org/data/<xsl:value-of select="vuln:cwe/@id"/></xsl:attribute>
+        </rdf:Description>
+      </nvdvuln:cwe>
       
       <nvdvuln:externalIdentifier>
         <xsl:value-of select="vuln:cve-id"/>
@@ -114,15 +116,28 @@
   
   <!-- vuln:references -->
   <xsl:template match="vuln:references">
-    <nvdvuln:hasReference>
+    <nvdvuln:reference>
       <rdf:Description>
-        <nvdvuln:referenceType>
-          <xsl:value-of select="@reference_type"/>
-        </nvdvuln:referenceType>
+        <rdf:type>
+          <xsl:choose>
+            <xsl:when test="starts-with(@reference_type, 'PATCH')">
+              <rdf:Description rdf:about="nvdvuln:PATCHReference"/>
+            </xsl:when>
+            <xsl:when test="starts-with(@reference_type, 'UNKNOWN')">
+              <rdf:Description rdf:about="nvdvuln:UNKNOWNReference" />
+            </xsl:when>
+            <xsl:when test="starts-with(@reference_type, 'VENDOR_ADVISORY')">
+              <rdf:Description rdf:about="nvdvuln:VENDOR_ADVISORYReference" />
+            </xsl:when>
+            <xsl:otherwise>
+              <rdf:Description rdf:about="nvdvuln:Reference" />
+            </xsl:otherwise>
+          </xsl:choose>
+        </rdf:type>
         <xsl:apply-templates select="vuln:source" />
         <xsl:apply-templates select="vuln:reference" />
       </rdf:Description>
-    </nvdvuln:hasReference>
+    </nvdvuln:reference>
   </xsl:template>
   
   <xsl:template match="vuln:reference">
