@@ -69,9 +69,9 @@
         </rdf:Description>
       </nvdvuln:cwe>
       
-      <nvdvuln:externalIdentifier>
+      <nvdvuln:cve>
         <xsl:value-of select="vuln:cve-id"/>
-      </nvdvuln:externalIdentifier>
+      </nvdvuln:cve>
       
       <nvdvuln:published rdf:datatype="xsd:dateTime">
         <xsl:value-of select="vuln:published-datetime"/>
@@ -115,6 +115,7 @@
   </xsl:template>
   
   <!-- vuln:references -->
+  <!-- TODO: utilize the xml:lang attribute to set the language -->
   <xsl:template match="vuln:references">
     <nvdvuln:reference>
       <rdf:Description>
@@ -134,6 +135,11 @@
             </xsl:otherwise>
           </xsl:choose>
         </rdf:type>
+        <xsl:if test="@deprecated">
+          <nvdvuln:referenceDeprecated rdf:datatype="xsd:boolean">
+            <xsl:value-of select="@deprecated" />
+          </nvdvuln:referenceDeprecated>
+        </xsl:if>
         <xsl:apply-templates select="vuln:source" />
         <xsl:apply-templates select="vuln:reference" />
       </rdf:Description>
