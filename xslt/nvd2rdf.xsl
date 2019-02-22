@@ -19,8 +19,7 @@
     xmlns:dc="http://purl.org/dc/terms/"
     xmlns:nvd="http://scap.nist.gov/schema/feed/vulnerability/2.0"
     
-    xmlns:nvdcve="http://nvd.nist.gov/ontology/nvdcve#"
-    xmlns:nvdvuln="http://scap.nist.gov/ontology/vulnerability"
+    xmlns:nvdvuln="https://mswimmer.github.io/utim/vulnerability#"
 >
   <xsl:include href="cvss2rdf.xsl"/>
   <xsl:include href="cpe-lang2rdf.xsl"/>
@@ -48,16 +47,14 @@
   <!--entry-->
   <xsl:template match="//nvd:entry">
     <xsl:variable name="nvd-id" select="@id" />
-    <xsl:variable name="entryURL"><xsl:value-of
-    select="$URI"/>/NVD/<xsl:value-of
-    select="$nvd-id"/></xsl:variable>
+    <xsl:variable name="entryURL"><xsl:value-of select="$URI"/>/<xsl:value-of select="$nvd-id"/></xsl:variable>
     
     <rdf:Description rdf:about="{$entryURL}">
-      <rdf:type rdf:resource="nvdcve:Entry" />
+      <rdf:type rdf:resource="https://mswimmer.github.io/utim/vulnerability#NVDEntry" />
 
-      <nvdcve:id>
+      <nvdvuln:id>
         <xsl:value-of select="$nvd-id"/>
-      </nvdcve:id>
+      </nvdvuln:id>
       
       <nvdvuln:summary>
         <xsl:value-of select="vuln:summary"/>
@@ -70,7 +67,9 @@
       </nvdvuln:cwe>
       
       <nvdvuln:cve>
-        <xsl:value-of select="vuln:cve-id"/>
+        <rdf:Description>
+          <xsl:attribute name="rdf:about"><xsl:value-of select="$URI"/>/<xsl:value-of select="vuln:cve-id"/></xsl:attribute>
+        </rdf:Description>
       </nvdvuln:cve>
       
       <nvdvuln:published rdf:datatype="xsd:dateTime">
@@ -114,7 +113,6 @@
     </nvdvuln:vulnerableConfiguration>
   </xsl:template>
   
-  <!-- vuln:references -->
   <!-- TODO: utilize the xml:lang attribute to set the language -->
   <xsl:template match="vuln:references">
     <nvdvuln:reference>
@@ -122,16 +120,16 @@
         <rdf:type>
           <xsl:choose>
             <xsl:when test="starts-with(@reference_type, 'PATCH')">
-              <rdf:Description rdf:about="nvdvuln:PATCHReference"/>
+              <rdf:Description rdf:about="https://mswimmer.github.io/utim/vulnerability#PATCHReference"/>
             </xsl:when>
             <xsl:when test="starts-with(@reference_type, 'UNKNOWN')">
-              <rdf:Description rdf:about="nvdvuln:UNKNOWNReference" />
+              <rdf:Description rdf:about="https://mswimmer.github.io/utim/vulnerability#UNKNOWNReference" />
             </xsl:when>
             <xsl:when test="starts-with(@reference_type, 'VENDOR_ADVISORY')">
-              <rdf:Description rdf:about="nvdvuln:VENDOR_ADVISORYReference" />
+              <rdf:Description rdf:about="https://mswimmer.github.io/utim/vulnerability#VENDOR_ADVISORYReference" />
             </xsl:when>
             <xsl:otherwise>
-              <rdf:Description rdf:about="nvdvuln:Reference" />
+              <rdf:Description rdf:about="https://mswimmer.github.io/utim/vulnerability#Reference" />
             </xsl:otherwise>
           </xsl:choose>
         </rdf:type>

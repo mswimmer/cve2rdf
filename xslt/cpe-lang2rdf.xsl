@@ -9,7 +9,7 @@
   xmlns:patch="http://scap.nist.gov/schema/patch/0.1"
   xmlns:nvd="http://scap.nist.gov/schema/feed/vulnerability/2.0"
   xmlns:cpe-lang="http://cpe.mitre.org/language/2.0"
-  xmlns:nvdcpe="http://nvd.nist.gov/ontology/cpe"
+  xmlns:nvdcpe="https://mswimmer.github.io/utim/platform#"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:cpe="http://cpe.mitre.org/cpe"
   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
@@ -22,20 +22,32 @@
 
   
   <xsl:template match="cpe-lang:logical-test">
-      <rdf:Description>
-	<rdf:type rdf:resource="nvdcpe:LogicalTest" />
-	<nvdcpe:operator>
-	  <xsl:value-of select="@operator" />
-	</nvdcpe:operator>
-	<nvdcpe:negate rdf:datatype="xsd:boolean">
-	  <xsl:value-of select="@negate" />
-	</nvdcpe:negate>
-        <xsl:for-each select="cpe-lang:fact-ref">
-          <nvdcpe:namePattern>
-            <xsl:value-of select="@name" />
-          </nvdcpe:namePattern>
-        </xsl:for-each>
-      </rdf:Description>
+    <rdf:Description>
+      <rdf:type rdf:resource="https://mswimmer.github.io/utim/platform#LogicalTest" />
+      <nvdcpe:operator>
+	<xsl:choose>
+          <xsl:when test="@operator='AND'">
+	    <rdf:Description rdf:about="https://mswimmer.github.io/utim/platform#AND" />
+          </xsl:when>
+          <xsl:when test="@operator='OR'">
+	    <rdf:Description rdf:about="https://mswimmer.github.io/utim/platform#OR" />
+          </xsl:when>
+	</xsl:choose>
+	
+      </nvdcpe:operator>
+      <nvdcpe:negate rdf:datatype="xsd:boolean">
+	<xsl:value-of select="@negate" />
+      </nvdcpe:negate>
+      <xsl:for-each select="cpe-lang:fact-ref">
+        <!--nvdcpe:namePattern>
+          <xsl:value-of select="@name" />
+        </nvdcpe:namePattern-->
+	<nvdcpe:platform>
+	  <!-- Make the CPE string into a URN with the experimental namespace of X-cpe as per https://tools.ietf.org/html/rfc3406#section-4.1 -->
+	  <rdf:Description rdf:about="urn:X-{@name}" />
+	</nvdcpe:platform>
+      </xsl:for-each>
+    </rdf:Description>
   </xsl:template>
   
 </xsl:stylesheet>
