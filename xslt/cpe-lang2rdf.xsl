@@ -42,10 +42,10 @@
         <!--nvdcpe:namePattern>
           <xsl:value-of select="@name" />
         </nvdcpe:namePattern-->
-	<nvdcpe:platform>
+	<nvdcpe:product>
 	  <!-- Make the CPE string into a URN with the experimental namespace of X-cpe as per https://tools.ietf.org/html/rfc3406#section-4.1 -->
 	  <rdf:Description rdf:about="urn:X-{@name}" />
-	</nvdcpe:platform>
+	</nvdcpe:product>
       </xsl:for-each>
     </rdf:Description>
   </xsl:template>

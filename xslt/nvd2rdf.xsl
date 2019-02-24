@@ -97,14 +97,15 @@
   </xsl:template>
   
   <xsl:template match="vuln:product">
-    <nvdvuln:vulnerableSoftware>
-    <rdf:Description>
+    <nvdvuln:vulnerableProduct>
+    <!--rdf:Description>
       <rdf:type rdf:resource="cpe-lang:Product" />
       <cpe-lang:title>
         <xsl:value-of select="text()" />
       </cpe-lang:title>
-    </rdf:Description>
-    </nvdvuln:vulnerableSoftware>
+    </rdf:Description-->
+     <rdf:Description rdf:about="urn:X-{text()}" />
+    </nvdvuln:vulnerableProduct>
   </xsl:template>
   
   <xsl:template match="vuln:vulnerable-configuration">
