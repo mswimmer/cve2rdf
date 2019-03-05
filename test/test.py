@@ -2,7 +2,7 @@ import unittest
 import rdflib
 
 PREFIXES="""
-PREFIX nvdcve: <http://nvd.nist.gov/ontologynvd-feed/>
+PREFIX nvdcve: <https://nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-2019.xml#>
 PREFIX cvss: <https://mswimmer.github.io/utim/score#>
 PREFIX vuln: <https://mswimmer.github.io/utim/vulnerability#>
 """
@@ -19,20 +19,20 @@ class TestCVE20180001XSLT(unittest.TestCase):
           ?s a vuln:NVDEntry .
         }"""
         self.assertEqual(1, len(list(self.g.query(q))))
-        self.assertEqual("http://nvd.nist.gov/nvd-feed/CVE-2018-0001", str(list(self.g.query(q))[0].s))
+        self.assertEqual("https://nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-2019.xml#CVE-2018-0001", str(list(self.g.query(q))[0].s))
 
     def test_cvss(self):
         q = PREFIXES + """
         SELECT * 
         WHERE { 
-          ?s a cvss:CVSSv2MetricGroup .
+          ?s a cvss:CVSSv2BaseMetricGroup .
         }"""
         self.assertEqual(1, len(list(self.g.query(q))))
 
     def test_cvss_data_objects(self):
         q = PREFIXES + """
         ASK {
-          ?s a cvss:CVSSv2MetricGroup;
+          ?s a cvss:CVSSv2BaseMetricGroup;
              cvss:hasAttackComplexity cvss:CVSSv2LowAccessComplexity ;
 	     cvss:hasAttackVector cvss:CVSSv2NetworkAccessVector ;
 	     cvss:hasAuthentication cvss:CVSSv2NoAuthentication ;
@@ -45,7 +45,7 @@ class TestCVE20180001XSLT(unittest.TestCase):
     def test_cvss_data_literals(self):
         q = PREFIXES + """
         ASK {
-          ?s a cvss:CVSSv2MetricGroup;
+          ?s a cvss:CVSSv2BaseMetricGroup;
              cvss:cvss_v2_baseScore "7.5"^^<xs:decimal> ;
              cvss:generationTime "2018-01-30T17:21:59.327-05:00"^^<xs:dateTime> .
         }"""
