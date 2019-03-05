@@ -6,7 +6,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1"
   xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2"
-  xmlns:cvss2="https://mswimmer.github.io/utim/score#"
+  xmlns:score="https://mswimmer.github.io/utim/score#"
   xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4"
   xmlns:patch="http://scap.nist.gov/schema/patch/0.1"
   xmlns:nvd="http://scap.nist.gov/schema/feed/vulnerability/2.0"
@@ -24,12 +24,12 @@
   
   <xsl:template match="//cvss:base_metrics">
       <rdf:Description>
-	<rdf:type rdf:resource="https://mswimmer.github.io/utim/score#CVSSv2MetricGroup" />
-	<cvss2:cvss_v2_baseScore rdf:datatype="xs:decimal">
+	<rdf:type rdf:resource="https://mswimmer.github.io/utim/score#CVSSv2BaseMetricGroup" />
+	<score:cvss_v2_baseScore rdf:datatype="xs:decimal">
 	  <xsl:value-of select="cvss:score/text()" />
-	</cvss2:cvss_v2_baseScore>
+	</score:cvss_v2_baseScore>
         
-	<cvss2:hasAttackVector>
+	<score:hasAttackVector>
           <xsl:choose>
             <xsl:when test="starts-with(cvss:access-vector, 'ADJACENT_NETWORK')">
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2NetworkAccessVector"></rdf:Description>
@@ -44,9 +44,9 @@
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2PhysicalAccessVector"></rdf:Description>
             </xsl:when>
           </xsl:choose>
-	</cvss2:hasAttackVector>
+	</score:hasAttackVector>
         
-	<cvss2:hasAttackComplexity>
+	<score:hasAttackComplexity>
           <xsl:choose>
             <xsl:when test="starts-with(cvss:access-complexity, 'LOW')">
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2LowAccessComplexity"></rdf:Description>
@@ -58,9 +58,9 @@
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2HighAccessComplexity"></rdf:Description>
             </xsl:when>
           </xsl:choose>
-	</cvss2:hasAttackComplexity>
+	</score:hasAttackComplexity>
         
-	<cvss2:hasConfidentialityImpact>
+	<score:hasConfidentialityImpact>
           <xsl:choose>
             <xsl:when test="starts-with(cvss:confidentiality-impact, 'PARTIAL')">
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2PartialConfidentialityImpact"></rdf:Description>
@@ -79,9 +79,9 @@
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv3HighConfidentialityImpact"></rdf:Description>
             </xsl:when>
           </xsl:choose>
-	</cvss2:hasConfidentialityImpact>
+	</score:hasConfidentialityImpact>
         
-	<cvss2:hasIntegrityImpact>
+	<score:hasIntegrityImpact>
           <xsl:choose>
             <xsl:when test="starts-with(cvss:integrity-impact, 'PARTIAL')">
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2PartialIntegrityImpact"></rdf:Description>
@@ -100,9 +100,9 @@
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2HighIntegrityImpact"></rdf:Description>
             </xsl:when>
           </xsl:choose>
-	</cvss2:hasIntegrityImpact>
+	</score:hasIntegrityImpact>
         
-        <cvss2:hasAvailabilityImpact>
+        <score:hasAvailabilityImpact>
           <xsl:choose>
             <xsl:when test="starts-with(cvss:availability-impact, 'PARTIAL')">
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2PartialAvailabilityImpact"></rdf:Description>
@@ -121,9 +121,9 @@
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv3HighAvailabilityImpact"></rdf:Description>
             </xsl:when>
           </xsl:choose>
-	</cvss2:hasAvailabilityImpact>
+	</score:hasAvailabilityImpact>
 
-	<cvss2:hasAuthentication>
+	<score:hasAuthentication>
           <xsl:choose>
             <xsl:when test="starts-with(cvss:authentication, 'NONE')">
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2NoAuthentication"></rdf:Description>
@@ -136,14 +136,14 @@
               <rdf:Description rdf:about="https://mswimmer.github.io/utim/score#CVSSv2MultipleAuthentications"></rdf:Description>
             </xsl:when>
           </xsl:choose>
-	</cvss2:hasAuthentication>
+	</score:hasAuthentication>
 
         
 	<dc:source rdf:resource="{cvss:source/text()}" />
         
-	<cvss2:generationTime rdf:datatype="xs:dateTime">
+	<score:generationTime rdf:datatype="xs:dateTime">
 	  <xsl:value-of select="cvss:generated-on-datetime/text()" />
-	</cvss2:generationTime>
+	</score:generationTime>
         
       </rdf:Description>
   </xsl:template>

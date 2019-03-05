@@ -13,7 +13,7 @@
     xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1" 
     xmlns:patch="http://scap.nist.gov/schema/patch/0.1" 
     xmlns:cpe-lang="http://cpe.mitre.org/language/2.0" 
-    
+    xmlns:cve1="http://cve.mitre.org/cve/downloads/1.0"
     xmlns:vuln="http://scap.nist.gov/schema/vulnerability/0.4" 
     xmlns:cvss="http://scap.nist.gov/schema/cvss-v2/0.2" 
     xmlns:dc="http://purl.org/dc/terms/"
@@ -24,19 +24,27 @@
   <xsl:include href="cvss2rdf.xsl"/>
   <xsl:include href="cpe-lang2rdf.xsl"/>
   
-  <xsl:variable name="URI">http://nvd.nist.gov/nvd-feed</xsl:variable>
-
+  <!--xsl:variable name="URI">http://nvd.nist.gov/nvd-feed</xsl:variable-->
+  <xsl:param name="BASEURI"/>
+  
   <xsl:output method="xml" encoding="UTF-8"/>
   <xsl:strip-space elements="*" />
   <xsl:output indent="yes" />
 
-  <!--root(rdf:RDF)-->
+  <!-- NVD root -->
   <xsl:template match="/nvd:nvd">
     <rdf:RDF>
       <xsl:apply-templates />
     </rdf:RDF>
   </xsl:template>
 
+  <!-- CVE root -->
+  <xsl:template match="/cve1:cve">
+    <rdf:RDF>
+      <xsl:apply-templates />
+    </rdf:RDF>
+  </xsl:template>
+  
   <xsl:template match="*">
     <xsl:message terminate="no">
       WARNING: Unmatched element: <xsl:value-of select="name()"/>
@@ -44,16 +52,16 @@
     <xsl:apply-templates/>
   </xsl:template>
 
-  <!--entry-->
+  <!-- NVD entry -->
   <xsl:template match="//nvd:entry">
-    <xsl:variable name="nvd-id" select="@id" />
-    <xsl:variable name="entryURL"><xsl:value-of select="$URI"/>/<xsl:value-of select="$nvd-id"/></xsl:variable>
+    <xsl:variable name="entryId" select="@id" />
+    <xsl:variable name="entryURL"><xsl:value-of select="$BASEURI"/><xsl:value-of select="$entryId"/></xsl:variable>
     
     <rdf:Description rdf:about="{$entryURL}">
       <rdf:type rdf:resource="https://mswimmer.github.io/utim/vulnerability#NVDEntry" />
 
       <nvdvuln:id>
-        <xsl:value-of select="$nvd-id"/>
+        <xsl:value-of select="$entryId"/>
       </nvdvuln:id>
       
       <nvdvuln:summary>
@@ -68,7 +76,7 @@
       
       <nvdvuln:cve>
         <rdf:Description>
-          <xsl:attribute name="rdf:about"><xsl:value-of select="$URI"/>/<xsl:value-of select="vuln:cve-id"/></xsl:attribute>
+          <xsl:attribute name="rdf:about"><xsl:value-of select="$BASEURI"/><xsl:value-of select="vuln:cve-id"/></xsl:attribute>
         </rdf:Description>
       </nvdvuln:cve>
       
@@ -76,9 +84,9 @@
         <xsl:value-of select="vuln:published-datetime"/>
       </nvdvuln:published>
       
-      <nvdvuln:lastModified rdf:datatype="xsd:dateTime">
+      <nvdvuln:modified rdf:datatype="xsd:dateTime">
         <xsl:value-of select="vuln:last-modified-datetime"/>
-      </nvdvuln:lastModified>
+      </nvdvuln:modified>
 
       <xsl:apply-templates select="vuln:vulnerable-software-list" />
       <xsl:apply-templates select="vuln:references" />
@@ -92,18 +100,33 @@
     </rdf:Description>
   </xsl:template>
 
+  <!-- CVE Item (entry) -->
+  <xsl:template match="//cve1:item">
+    <xsl:variable name="entryId" select="@name" />
+    <xsl:variable name="entryURL"><xsl:value-of select="$BASEURI"/><xsl:value-of select="$entryId"/></xsl:variable>
+    <rdf:Description  rdf:about="{$entryURL}">
+      <rdf:type>
+	<xsl:choose>
+          <xsl:when test="@type='CAN'">
+            <rdf:Description rdf:about="nvdvuln:CandidateEntry" />
+          </xsl:when>
+          <xsl:when test="@type='CVE'">
+            <rdf:Description rdf:about="nvdvuln:CVEEntry" />
+          </xsl:when>
+	</xsl:choose>
+      </rdf:type>
+      <xsl:apply-templates select="cve1:refs" />
+      <!-- we will skip votes and comments because these were
+	   eventually phased out -->
+    </rdf:Description>
+  </xsl:template>
+  
   <xsl:template match="vuln:vulnerable-software-list">
       <xsl:apply-templates select="vuln:product" />
   </xsl:template>
   
   <xsl:template match="vuln:product">
     <nvdvuln:vulnerableProduct>
-    <!--rdf:Description>
-      <rdf:type rdf:resource="cpe-lang:Product" />
-      <cpe-lang:title>
-        <xsl:value-of select="text()" />
-      </cpe-lang:title>
-    </rdf:Description-->
      <rdf:Description rdf:about="urn:X-{text()}" />
     </nvdvuln:vulnerableProduct>
   </xsl:template>
@@ -141,6 +164,33 @@
         </xsl:if>
         <xsl:apply-templates select="vuln:source" />
         <xsl:apply-templates select="vuln:reference" />
+      </rdf:Description>
+    </nvdvuln:reference>
+  </xsl:template>
+
+  <xsl:template match="cve1:refs">
+    <xsl:apply-templates select="cve1:ref" />
+  </xsl:template>
+    
+  <xsl:template match="cve1:ref">
+    <nvdvuln:reference>
+      <rdf:Description>
+        <rdf:type>
+          <rdf:Description rdf:about="https://mswimmer.github.io/utim/vulnerability#Reference" />
+        </rdf:type>
+	
+        <nvdvuln:referenceSource>
+	  <xsl:value-of select="@source"/>
+	</nvdvuln:referenceSource>
+	
+        <xsl:apply-templates select="vuln:reference" />
+	<nvdvuln:referenceURL rdf:datatype="xsd:anyURI">
+	  <xsl:value-of select="@url" />
+	</nvdvuln:referenceURL>
+	<nvdvuln:referenceTitle xml:lang="en">
+	  <xsl:value-of select="text()" />
+	</nvdvuln:referenceTitle>
+	
       </rdf:Description>
     </nvdvuln:reference>
   </xsl:template>
