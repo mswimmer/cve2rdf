@@ -18,6 +18,7 @@
     
     xmlns:cvefeed="http://cve.mitre.org/cve/downloads/1.0"
     xmlns:nvdfeed="http://scap.nist.gov/schema/feed/vulnerability/2.0"
+    xmlns:nvd1feed="http://nvd.nist.gov/feeds/cve/1.2"
     
     xmlns:vuln="http://ontologies.ti-semantics.com/vulnerability#"
 >
@@ -32,7 +33,14 @@
   <xsl:strip-space elements="*" />
   <xsl:output indent="yes" />
 
-  <!-- NVD root -->
+  <!-- NVD 1 root -->
+  <xsl:template match="/nvd1feed:nvd">
+    <rdf:RDF>
+      <xsl:apply-templates />
+    </rdf:RDF>
+  </xsl:template>
+
+  <!-- NVD 2 root -->
   <xsl:template match="/nvdfeed:nvd">
     <rdf:RDF>
       <xsl:apply-templates />
@@ -101,6 +109,32 @@
     </rdf:Description>
   </xsl:template>
 
+   <!-- NVD 1 entry -->
+  <xsl:template match="//nvd1feed:entry">
+    <xsl:variable name="entryId" select="@name" />
+    <xsl:variable name="entryURL"><xsl:value-of select="$BASEURI"/><xsl:value-of select="$entryId"/></xsl:variable>
+    <rdf:Description  rdf:about="{$entryURL}">
+      <rdf:type>
+	<xsl:choose>
+          <xsl:when test="@type='CAN'">
+            <rdf:Description rdf:about="{$VULN}CandidateEntry" />
+          </xsl:when>
+          <xsl:when test="@type='CVE'">
+            <rdf:Description rdf:about="{$VULN}CVEEntry" />
+          </xsl:when>
+	</xsl:choose>
+      </rdf:type>
+      
+      <vuln:summary>
+        <xsl:value-of select="nvd1feed:desc/nvd1feed:descript"/>
+      </vuln:summary>
+
+      <xsl:apply-templates select="nvd1feed:refs" />
+      <!-- we will skip votes and comments because these were
+	   eventually phased out -->
+    </rdf:Description>
+  </xsl:template>
+ 
   <!-- CVE Item (entry) -->
   <xsl:template match="//cvefeed:item">
     <xsl:variable name="entryId" select="@name" />
@@ -116,6 +150,10 @@
           </xsl:when>
 	</xsl:choose>
       </rdf:type>
+      <vuln:summary>
+        <xsl:value-of select="cvefeed:desc"/>
+      </vuln:summary>
+
       <xsl:apply-templates select="cvefeed:refs" />
       <!-- we will skip votes and comments because these were
 	   eventually phased out -->
@@ -165,6 +203,33 @@
         </xsl:if>
         <xsl:apply-templates select="scapvuln:source" />
         <xsl:apply-templates select="scapvuln:reference" />
+      </rdf:Description>
+    </vuln:reference>
+  </xsl:template>
+  
+  <xsl:template match="nvd1feed:refs">
+    <xsl:apply-templates select="nvd1feed:ref" />
+  </xsl:template>
+    
+  <xsl:template match="nvd1feed:ref">
+    <vuln:reference>
+      <rdf:Description>
+        <rdf:type>
+          <rdf:Description rdf:about="{$VULN}Reference" />
+        </rdf:type>
+	
+        <vuln:referenceSource>
+	  <xsl:value-of select="@source"/>
+	</vuln:referenceSource>
+	
+        <xsl:apply-templates select="scapvuln:reference" />
+	<vuln:referenceURL rdf:datatype="xsd:anyURI">
+	  <xsl:value-of select="@url" />
+	</vuln:referenceURL>
+	<vuln:referenceTitle xml:lang="en">
+	  <xsl:value-of select="text()" />
+	</vuln:referenceTitle>
+	
       </rdf:Description>
     </vuln:reference>
   </xsl:template>
