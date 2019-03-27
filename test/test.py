@@ -3,8 +3,8 @@ import rdflib
 
 PREFIXES="""
 PREFIX nvdcve: <https://nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-2019.xml#>
-PREFIX cvss: <https://mswimmer.github.io/utim/score#>
-PREFIX vuln: <https://mswimmer.github.io/utim/vulnerability#>
+PREFIX cvss: <http://ontologies.ti-semantics.com/score#>
+PREFIX vuln: <http://ontologies.ti-semantics.com/vulnerability#>
 """
 
 class TestCVE20180001XSLT(unittest.TestCase):

@@ -26,8 +26,7 @@
   
   <!--xsl:variable name="URI">http://nvd.nist.gov/nvd-feed</xsl:variable-->
   <xsl:param name="BASEURI"/>
-  <xsl:variable
-      name="VULN">http://ontologies.ti-semantics.com/vulnerability#</xsl:variable>
+  <xsl:variable name="VULN">http://ontologies.ti-semantics.com/vulnerability#</xsl:variable>
   
   <xsl:output method="xml" encoding="UTF-8"/>
   <xsl:strip-space elements="*" />
@@ -110,10 +109,10 @@
       <rdf:type>
 	<xsl:choose>
           <xsl:when test="@type='CAN'">
-            <rdf:Description rdf:about="vuln:CandidateEntry" />
+            <rdf:Description rdf:about="{$VULN}CandidateEntry" />
           </xsl:when>
           <xsl:when test="@type='CVE'">
-            <rdf:Description rdf:about="vuln:CVEEntry" />
+            <rdf:Description rdf:about="{$VULN}CVEEntry" />
           </xsl:when>
 	</xsl:choose>
       </rdf:type>
