@@ -16,7 +16,7 @@ class TestCVE20180001XSLT(unittest.TestCase):
         q = PREFIXES + """
         SELECT * 
         WHERE { 
-          ?s a vuln:NVDEntry .
+          ?s a vuln:NVD20Vulnerability .
         }"""
         self.assertEqual(1, len(list(self.g.query(q))))
         self.assertEqual("https://nvd.nist.gov/feeds/xml/cve/2.0/nvdcve-2.0-2019.xml#CVE-2018-0001", str(list(self.g.query(q))[0].s))
@@ -54,7 +54,7 @@ class TestCVE20180001XSLT(unittest.TestCase):
     def test_id(self):
         q = PREFIXES + """
         ASK {
-          ?s a vuln:NVDEntry;
+          ?s a vuln:NVD20Vulnerability;
              vuln:id "CVE-2018-0001" .
         }"""
         self.assertTrue(self.g.query(q))
@@ -62,7 +62,7 @@ class TestCVE20180001XSLT(unittest.TestCase):
     def test_reference_unknown(self):
         q = PREFIXES + """
         ASK {
-          ?s a vuln:UNKNOWNReference;
+          ?s a vuln:Reference;
              vuln:referenceSource "BID" ;
              vuln:referenceTitle "103092"@en ;
              vuln:referenceURL "http://www.securityfocus.com/bid/103092"^^<xsd:anyURI> .
@@ -72,7 +72,7 @@ class TestCVE20180001XSLT(unittest.TestCase):
     def test_reference_sectrack(self):
         q = PREFIXES + """
         ASK {
-          ?s a vuln:VENDOR_ADVISORYReference ;
+          ?s a vuln:VendorAdvisoryReference ;
            vuln:referenceSource "SECTRACK" ;
            vuln:referenceTitle "1040180"@en ;
            vuln:referenceURL "http://www.securitytracker.com/id/1040180"^^<xsd:anyURI>
@@ -82,7 +82,7 @@ class TestCVE20180001XSLT(unittest.TestCase):
     def test_reference_confirm(self):
         q = PREFIXES + """
         ASK {
-          ?s a vuln:VENDOR_ADVISORYReference ;
+          ?s a vuln:VendorAdvisoryReference ;
              vuln:referenceSource "CONFIRM" ;
              vuln:referenceTitle "https://kb.juniper.net/JSA10828"@en ;
              vuln:referenceURL "https://kb.juniper.net/JSA10828"^^<xsd:anyURI>
