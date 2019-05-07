@@ -1,5 +1,5 @@
 SAXON_ARGS=
-XSLT_DIR=../xslt
+XSLT_DIR=../../utim/xslt
 COL_DIR=.
 
 convert () {

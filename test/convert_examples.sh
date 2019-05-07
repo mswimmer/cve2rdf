@@ -1,7 +1,7 @@
 #!/bin/bash
 # continuously build example RDF files from the sources
 
-XSLT_DIR=../xslt
+XSLT_DIR=../../utim/xslt
 #SAXON_ARGS=-T:net.sf.saxon.trace.XSLTTraceListener
 SAXON_ARGS=
 
